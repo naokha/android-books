@@ -53,11 +53,11 @@ public class LibraryActivity extends AppCompatActivity implements BookRecyclerAd
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if(isInPortrait()) {
             fragmentTransaction
-                    .replace(R.id.frameContainer, bookDetailFragment, BookDetailFragment.class.getSimpleName())
+                    .replace(R.id.mainFrame, bookDetailFragment, BookDetailFragment.class.getSimpleName())
                     .addToBackStack(BookDetailFragment.class.getSimpleName());
         } else {
             fragmentTransaction
-                    .replace(R.id.bookDetailFrame, bookDetailFragment, BookDetailFragment.class.getSimpleName());
+                    .replace(R.id.secondaryFrame, bookDetailFragment, BookDetailFragment.class.getSimpleName());
         }
         fragmentTransaction.commit();
     }
@@ -99,22 +99,21 @@ public class LibraryActivity extends AppCompatActivity implements BookRecyclerAd
             currentBook = (Book) savedInstanceState.getParcelable("book");
             bookDetailFragment.setBook(currentBook);
         }
+        setContentView(R.layout.activity_library);
         if(isInPortrait()) {
-            setContentView(R.layout.portrait_template);
             fragmentTransaction
-                    .replace(R.id.frameContainer, bookListFragment, BookListFragment.class.getSimpleName())
+                    .replace(R.id.mainFrame, bookListFragment, BookListFragment.class.getSimpleName())
                     .commit();
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
             if(currentBook != null) {
                 fragmentTransaction
-                        .replace(R.id.frameContainer, bookDetailFragment, BookDetailFragment.class.getSimpleName())
+                        .replace(R.id.mainFrame, bookDetailFragment, BookDetailFragment.class.getSimpleName())
                         .addToBackStack(BookDetailFragment.class.getSimpleName());
             }
         } else {
-            setContentView(R.layout.landscape_template);
             fragmentTransaction
-                    .replace(R.id.bookListFrame, bookListFragment, BookListFragment.class.getSimpleName())
-                    .replace(R.id.bookDetailFrame, bookDetailFragment, BookListFragment.class.getSimpleName());
+                    .replace(R.id.mainFrame, bookListFragment, BookListFragment.class.getSimpleName())
+                    .replace(R.id.secondaryFrame, bookDetailFragment, BookListFragment.class.getSimpleName());
         }
         fragmentTransaction.commit();
     }

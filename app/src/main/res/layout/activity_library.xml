@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".Library">
     <FrameLayout
-        android:id="@+id/bookListFrame"
+        android:id="@+id/mainFrame"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-    />
+        android:layout_weight="@integer/mainFrameWeight"
+        />
     <FrameLayout
-        android:id="@+id/bookDetailFrame"
+        android:id="@+id/secondaryFrame"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="@integer/secondaryFrameWeight"/>
 </LinearLayout >

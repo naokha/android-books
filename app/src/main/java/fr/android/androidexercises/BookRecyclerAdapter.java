@@ -47,10 +47,6 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter {
         public ViewHolder(View itemView) {
             super(itemView);
         }
-
-        public int getPos(){
-            return getAdapterPosition();
-        }
     }
 
     public interface OnClickBookListener {
