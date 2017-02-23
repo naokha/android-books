@@ -24,7 +24,11 @@ public class BookListFragment extends Fragment {
     private static final String step0 = "This is step 0";
 
     private RecyclerView listView;
+    private List<Book> books;
 
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -35,27 +39,9 @@ public class BookListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.book_list, container, false);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://henri-potier.xebia.fr")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        HenriPotierService service = retrofit.create(HenriPotierService.class);
-        Call<List<Book>> books = service.listBooks();
-        books.enqueue(new Callback<List<Book>>(){
-
-            @Override
-            public void onResponse(Call<List<Book>> call, Response<List<Book>> response) {
-                listView = (RecyclerView) view.findViewById(R.id.recyclerView);
-                listView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-                listView.setAdapter(new BookRecyclerAdapter(LayoutInflater.from(view.getContext()), response.body()));
-            }
-
-            @Override
-            public void onFailure(Call<List<Book>> call, Throwable t) {
-                Timber.i(t.getMessage());
-            }
-        });
+        listView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        listView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        listView.setAdapter(new BookRecyclerAdapter(LayoutInflater.from(view.getContext()), books));
         return view;
     }
 }

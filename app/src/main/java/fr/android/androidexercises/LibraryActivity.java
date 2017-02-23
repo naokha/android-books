@@ -3,6 +3,8 @@ package fr.android.androidexercises;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,100 +25,97 @@ import timber.log.Timber;
 
 public class LibraryActivity extends AppCompatActivity implements BookRecyclerAdapter.OnClickBookListener {
     private Book currentBook;
-    private BookListFragment bookListFragment;
-    private BookDetailFragment bookDetailFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Timber.i("Create activity");
         super.onCreate(savedInstanceState);
         Timber.plant(new Timber.DebugTree());
-        if(isInPortrait()) {
-            setContentView(R.layout.portrait_template);
-        } else {
-            setContentView(R.layout.landscape_template);
-        }
-        bookListFragment = new BookListFragment();
-        bookDetailFragment = new BookDetailFragment();
-        //bookDetailFragment.setBook(currentBook);
-        /*if(isInPortrait()) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.frameContainer, bookListFragment, BookListFragment.class.getSimpleName())
-                    .commit();
-        } else {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.bookListFrame, bookListFragment, BookListFragment.class.getSimpleName())
-                    .commit();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.bookDetailFrame, bookDetailFragment, BookListFragment.class.getSimpleName())
-                    .commit();
-        }*/
-
-
-        if(savedInstanceState == null) {
-            if(isInPortrait()) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.frameContainer, bookListFragment, BookListFragment.class.getSimpleName())
-                        .commit();
-            } else {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.bookListFrame, bookListFragment, BookListFragment.class.getSimpleName())
-                        .commit();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.bookDetailFrame, bookDetailFragment, BookListFragment.class.getSimpleName())
-                        .commit();
-            }
-        } else {
-            if(isInPortrait()) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.frameContainer, bookListFragment, BookListFragment.class.getSimpleName())
-                        .commit();
-            } else {
-                currentBook = (Book) savedInstanceState.getParcelable("book");
-                Timber.i(currentBook.getTitle());
-                bookDetailFragment.setBook(currentBook);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.bookListFrame, bookListFragment, BookListFragment.class.getSimpleName())
-                        .commit();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.bookDetailFrame, bookDetailFragment, BookListFragment.class.getSimpleName())
-                        .commit();
-            }
-        }
+        loadBooks(savedInstanceState);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        Timber.i("Save activity");
-        super.onSaveInstanceState(outState, outPersistentState);
+    public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable("book", currentBook);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        Timber.i("Restore activity");
-        super.onRestoreInstanceState(savedInstanceState);
         currentBook = (Book) savedInstanceState.getParcelable("book");
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     public void onClickBook(Book book) {
         currentBook = book;
-        //bookDetailFragment bookDetailFragment = new BookDetailFragment();
-        bookDetailFragment.setBook(book);
-        /*if(isInPortrait()) {
-            getSupportFragmentManager().beginTransaction()
+        BookDetailFragment bookDetailFragment = new BookDetailFragment();
+        bookDetailFragment.setBook(currentBook);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if(isInPortrait()) {
+            fragmentTransaction
                     .replace(R.id.frameContainer, bookDetailFragment, BookDetailFragment.class.getSimpleName())
-                    .addToBackStack(BookDetailFragment.class.getSimpleName())
-                    .commit();
+                    .addToBackStack(BookDetailFragment.class.getSimpleName());
         } else {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.bookDetailFrame, bookDetailFragment, BookDetailFragment.class.getSimpleName())
-                    .commit();
-        }*/
+            fragmentTransaction
+                    .replace(R.id.bookDetailFrame, bookDetailFragment, BookDetailFragment.class.getSimpleName());
+        }
+        fragmentTransaction.commit();
     }
 
     private boolean isInPortrait(){
         return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
+    private void loadBooks(final Bundle savedInstanceState) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://henri-potier.xebia.fr")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        HenriPotierService service = retrofit.create(HenriPotierService.class);
+        Call<List<Book>> books = service.listBooks();
+        books.enqueue(new Callback<List<Book>>(){
+
+            @Override
+            public void onResponse(Call<List<Book>> call, Response<List<Book>> response) {
+                Timber.i("Books loaded");
+                loadTemplates(response.body(), savedInstanceState);
+            }
+
+            @Override
+            public void onFailure(Call<List<Book>> call, Throwable t) {
+                Timber.i(t.getMessage());
+            }
+        });
+    }
+
+    private void loadTemplates(List<Book> books, Bundle savedInstanceState) {
+        BookListFragment bookListFragment = new BookListFragment();
+        bookListFragment.setBooks(books);
+        BookDetailFragment bookDetailFragment = new BookDetailFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        if(savedInstanceState != null) {
+            currentBook = (Book) savedInstanceState.getParcelable("book");
+            bookDetailFragment.setBook(currentBook);
+        }
+        if(isInPortrait()) {
+            setContentView(R.layout.portrait_template);
+            fragmentTransaction
+                    .replace(R.id.frameContainer, bookListFragment, BookListFragment.class.getSimpleName())
+                    .commit();
+            fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            if(currentBook != null) {
+                fragmentTransaction
+                        .replace(R.id.frameContainer, bookDetailFragment, BookDetailFragment.class.getSimpleName())
+                        .addToBackStack(BookDetailFragment.class.getSimpleName());
+            }
+        } else {
+            setContentView(R.layout.landscape_template);
+            fragmentTransaction
+                    .replace(R.id.bookListFrame, bookListFragment, BookListFragment.class.getSimpleName())
+                    .replace(R.id.bookDetailFrame, bookDetailFragment, BookListFragment.class.getSimpleName());
+        }
+        fragmentTransaction.commit();
+    }
 }
