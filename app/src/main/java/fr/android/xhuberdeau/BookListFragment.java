@@ -1,4 +1,4 @@
-package fr.android.androidexercises;
+package fr.android.xhuberdeau;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,23 +12,8 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import timber.log.Timber;
-
 public class BookListFragment extends Fragment {
-
-    private static final String step0 = "This is step 0";
-
     private RecyclerView listView;
-    private List<Book> books;
-
-    public void setBooks(List<Book> books) {
-        this.books = books;
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -41,6 +26,7 @@ public class BookListFragment extends Fragment {
         final View view = inflater.inflate(R.layout.book_list, container, false);
         listView = (RecyclerView) view.findViewById(R.id.recyclerView);
         listView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        List<Book> books = getArguments().getParcelableArrayList(LibraryActivity.BOOKS_KEY);
         listView.setAdapter(new BookRecyclerAdapter(LayoutInflater.from(view.getContext()), books));
         return view;
     }

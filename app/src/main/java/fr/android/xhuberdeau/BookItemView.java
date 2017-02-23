@@ -1,4 +1,4 @@
-package fr.android.androidexercises;
+package fr.android.xhuberdeau;
 
 import android.content.Context;
 import android.util.AttributeSet;

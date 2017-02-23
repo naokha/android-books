@@ -1,14 +1,11 @@
-package fr.android.androidexercises;
+package fr.android.xhuberdeau;
 
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
-
-import timber.log.Timber;
 
 
 public class BookRecyclerAdapter extends RecyclerView.Adapter {

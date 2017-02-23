@@ -1,4 +1,4 @@
-package fr.android.androidexercises;
+package fr.android.xhuberdeau;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
