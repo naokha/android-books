@@ -66,7 +66,7 @@ public class LibraryActivity extends AppCompatActivity implements BookRecyclerAd
     /**
      * Load the list fragment
      */
-    public void loadListView() {
+    private void loadListView() {
         BookListFragment bookListFragment = new BookListFragment();
         Bundle bundle = new Bundle();
         // add books as a bundle so that they can be restored
@@ -75,6 +75,7 @@ public class LibraryActivity extends AppCompatActivity implements BookRecyclerAd
         FragmentManager fragmentManager = getSupportFragmentManager();
         // delete previous stack
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         fragmentManager.beginTransaction()
                 .replace(R.id.mainFrame, bookListFragment, BOOK_LIST)
                 .commit();
@@ -83,7 +84,7 @@ public class LibraryActivity extends AppCompatActivity implements BookRecyclerAd
     /**
      * Load the detail fragment
      */
-    public void loadDetailView(){
+    private void loadDetailView(){
         BookDetailFragment bookDetailFragment = new BookDetailFragment();
         Bundle bundle = new Bundle();
         // add current book as a bundle so that it can be restored
