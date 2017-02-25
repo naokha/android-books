@@ -31,7 +31,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
-public class LibraryActivityTest {
+public class LibraryActivityUITests {
     @Rule
     public ActivityTestRule<LibraryActivity> activityRule = new ActivityTestRule<LibraryActivity>(LibraryActivity.class);
 
@@ -94,7 +94,7 @@ public class LibraryActivityTest {
     }
 
     @Test
-    public void full_behavior_from_portrait_state(){
+    public void full_behaviour_from_portrait_state(){
         // portrait mode
         setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // list view should be visible
@@ -129,7 +129,7 @@ public class LibraryActivityTest {
     }
 
     @Test
-    public void full_behavior_from_landscape_state(){
+    public void full_behaviour_from_landscape_state(){
         // set orientation to landscape
         setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         // left side should be book list
