@@ -1,3 +1,3 @@
-# Android exercises and code examples
+# Minimalist android app
 
-> Technical support for Android course given at Mines Nantes
+> Small android app for learning purposes. It's some kind of master / detail app with books.
